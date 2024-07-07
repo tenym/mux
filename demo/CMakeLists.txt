@@ -1,0 +1,7 @@
+INCLUDE_DIRECTORIES(${TOP_SOURCE_DIR}/libs/ffmpeg/include)
+INCLUDE_DIRECTORIES(${TOP_SOURCE_DIR}/libs/fdk-aac/include)
+
+ADD_SUBDIRECTORY(dec_g711)
+ADD_SUBDIRECTORY(src)
+
+
