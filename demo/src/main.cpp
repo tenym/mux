@@ -30,7 +30,6 @@ static int TestG711ToAAC(char *audio_name)
 
     Mt_Handle handle = Mt_AACEncoder_Init(initParam);
     char* infilename = (char *)audio_name;
-    char* outAacname = (char *)"audio.aac";
 
     FILE* fpIn = fopen(infilename, "rb");
     if(NULL == fpIn)
@@ -39,20 +38,12 @@ static int TestG711ToAAC(char *audio_name)
         return -1;
     }
 
-    FILE* fpOut = fopen(outAacname, "wb");
-    if(NULL == fpOut)
-    {
-        printf("%s:[%d] open %s file failed\n",__FUNCTION__,__LINE__,outAacname);
-        return -1;
-    }
-
     int gBytesRead = 0;
-    int bG711ABufferSize = 250;
+    int bG711ABufferSize = 500;
     int bAACBufferSize = 4*bG711ABufferSize;//提供足够大的缓冲区
     unsigned char *pbG711ABuffer = (unsigned char *)malloc(bG711ABufferSize *sizeof(unsigned char));
     unsigned char *pbAACBuffer = (unsigned char*)malloc(bAACBufferSize * sizeof(unsigned char));  
     unsigned int out_len = 0;
-	unsigned long long ts = 0;
 
     FrameInfo_t pframe = {0};
     int count = 0;
@@ -60,17 +51,12 @@ static int TestG711ToAAC(char *audio_name)
     {    
         if(Mt_AACEncoder_Encode(handle, pbG711ABuffer, gBytesRead, pbAACBuffer, &out_len) > 0)
         {
-            fwrite(pbAACBuffer, 1, out_len, fpOut);
- 
             pframe.frame_head.data_len = out_len;
             pframe.pdata = pbAACBuffer;
             mem_put_frame(MEM_NAME_AUDIO, &pframe);
             count++;
             usleep(1000*1000/15);
         }
-
-		ts += 1000000/25;
-        //usleep(1000*1000/25);
     }
     printf("aud_count:%d.\n", count);
 
@@ -79,8 +65,6 @@ static int TestG711ToAAC(char *audio_name)
     free(pbG711ABuffer);
     free(pbAACBuffer);
     fclose(fpIn);
-    fclose(fpOut);
-
     return 0;
 }
 
